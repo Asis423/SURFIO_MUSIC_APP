@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ui/home_page.dart';
+import 'ui/landing_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My App',
-      home: HomePage(), // Navigate to the home page
+      home: LandingPage(), // Navigate to the home page
     );
   }
 }
