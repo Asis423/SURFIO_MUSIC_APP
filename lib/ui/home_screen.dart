@@ -1,102 +1,172 @@
 import 'package:flutter/material.dart';
-import 'popular_screen.dart';  // Import your screens
+import 'home/latest.dart';
+import 'home/popular.dart';
+import 'popular_screen.dart';
 import 'latest_screen.dart';
 import 'artists_screen.dart';
 import 'genres_screen.dart';
 import 'albums_screen.dart';
-import 'search_screen.dart'; // For search functionality
+import 'search_screen.dart';
+import 'recommend_screen.dart'; // Create this screen for recommendations
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _selectedIndex = 0; // Track the selected index for the bottom navigation
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 6, vsync: this); // Initialize the TabController
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose(); // Dispose the controller
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      _tabController.animateTo(0); // Navigate to Home tab
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RecommendScreen()), // Open the Recommend screen
+      );
+    }
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 6, // The number of tabs (Home, Popular, etc.)
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF232323), // Updated background color
-          elevation: 0,
-          automaticallyImplyLeading: false, // Remove the back button
-          title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                // Hamburger icon for menu/navigation drawer
-                Icon(Icons.menu, color: Colors.white),
-                SizedBox(width: 10),
-                // Search bar container
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      // Navigate to search screen when tapped
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SearchScreen()),
-                      );
-                    },
-                    child: Container(
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF3F3F3F), // Updated search bar color
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search, color: Colors.grey), // Search icon
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Search songs, albums and artists', // Placeholder text
-                              style: TextStyle(color: Colors.grey, fontSize: 14), // Small text
-                              overflow: TextOverflow.ellipsis, // Handle overflow
-                            ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF252525),
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Icon(Icons.menu, color: Colors.white),
+              SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SearchScreen()),
+                    );
+                  },
+                  child: Container(
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF3F3F3F),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.grey),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Search songs, albums and artists',
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          Icon(Icons.tune, color: Colors.grey), // Filter icon
-                        ],
-                      ),
+                        ),
+                        Icon(Icons.tune, color: Colors.grey),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          // TabBar for switching between Home, Popular, etc.
-          bottom: TabBar(
-            isScrollable: false, // Fixed position, not scrollable
-            indicatorColor: Colors.purple, // Highlight color for selected tab
-            labelColor: Colors.white, // Color of the selected tab text
-            unselectedLabelColor: Color(0xFFAFAFAF), // Color of unselected tab text
-            labelStyle: TextStyle(fontSize: 13), // Style for selected tab text
-            unselectedLabelStyle: TextStyle(fontSize: 11), // Style for unselected tab text
-            indicatorPadding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust indicator padding
-            labelPadding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust tab padding
-            tabs: [
-              _buildTab('Home'),
-              _buildTab('Popular'),
-              _buildTab('Latest'),
-              _buildTab('Artists'),
-              _buildTab('Genres'),
-              _buildTab('Albums'),
+              ),
             ],
           ),
         ),
-        // Each tab's content is displayed in this TabBarView
-        body: TabBarView(
-          children: [
-            Container( // Simple placeholder for Home
-              color: Color(0xFF232323), // Updated background color
-              child: Center(
-                child: Text(
-                  'Home Screen Content',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
-                ),
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: false,
+          indicatorColor: Colors.purple,
+          labelColor: Colors.white,
+          unselectedLabelColor: Color(0xFFAFAFAF),
+          labelStyle: TextStyle(fontSize: 13),
+          unselectedLabelStyle: TextStyle(fontSize: 11),
+          indicatorPadding: EdgeInsets.symmetric(horizontal: 8.0),
+          labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
+          tabs: [
+            _buildTab('Home'),
+            _buildTab('Popular'),
+            _buildTab('Latest'),
+            _buildTab('Artists'),
+            _buildTab('Genres'),
+            _buildTab('Albums'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildHomeContent(), // Home content with popular and latest sections
+          PopularScreen(), // The individual PopularScreen view
+          LatestScreen(), // The individual LatestScreen view
+          ArtistsScreen(), // Other tabs
+          GenresScreen(),
+          AlbumsScreen(),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        height: 70, // Adjust this value to increase the height
+        child: BottomNavigationBar(
+          backgroundColor: Color(0xFF171717), // Darker black for bottom navigation
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.home,
+                color: _selectedIndex == 0 ? Colors.purple : Colors.white,
               ),
+              label: 'Home',
             ),
-            PopularScreen(),  // Ensure these screens are implemented in respective files
-            LatestScreen(),
-            ArtistsScreen(),
-            GenresScreen(),
-            AlbumsScreen(),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.recommend,
+                color: _selectedIndex == 1 ? Colors.purple : Colors.white,
+              ),
+              label: 'Recommend',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.purple,
+          unselectedItemColor: Colors.white,
+          onTap: _onItemTapped,
+        ),
+      ),
+    );
+  }
+
+  // This method builds the home content with "Popular" and "Latest" sections
+  Widget _buildHomeContent() {
+    return Container(
+      color: Color(0xFF232323),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PopularSection(onSeeAll: () {
+              _tabController.animateTo(1); // Switch to the Popular tab
+            }),
+            SizedBox(height: 25),
+            LatestSection(onSeeAll: () {
+              _tabController.animateTo(2); // Switch to the Latest tab
+            }),
           ],
         ),
       ),
