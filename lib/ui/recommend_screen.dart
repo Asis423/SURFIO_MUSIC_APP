@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // For parsing JSON responses
+import 'home_screen.dart';
+import 'recommended_songs.dart'; // Import the screen for recommended songs
 
 class RecommendScreen extends StatefulWidget {
   @override
@@ -6,102 +10,111 @@ class RecommendScreen extends StatefulWidget {
 }
 
 class _RecommendScreenState extends State<RecommendScreen> {
-  List<String> selectedGenres = [];
-  List<String> selectedArtists = [];
-  double danceability = 0.5;
-  double energy = 0.5;
-  double valence = 0.5;
+  int _selectedIndex = 1; // The Recommend tab is selected
+  TextEditingController _searchController = TextEditingController();
 
-  // Sample genres and artists (replace with your actual data)
-  final List<String> genres = ['Pop', 'Rock', 'Jazz', 'Hip Hop'];
-  final List<String> artists = ['Artist A', 'Artist B', 'Artist C'];
+  Future<void> _fetchRecommendations(String query) async {
+    final url = 'http://192.168.2.9:8000/music/recommend?query=$query'; // Update with your backend URL
+    try {
+      print('Fetching recommendations for query: $query'); // Debug log
+      final response = await http.get(Uri.parse(url));
+
+      print('Response status: ${response.statusCode}'); // Debug log
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final recommendations = data['recommendations'];
+
+        // Check if recommendations are not empty before navigating
+        if (recommendations != null && recommendations.isNotEmpty) {
+          // Navigate to RecommendedSongsScreen and pass recommendations
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecommendedSongsScreen(recommendations: recommendations, typedText: query), // Pass the typed query
+            ),
+          );
+        } else {
+          _showErrorDialog('No recommendations found for this query.');
+        }
+      } else {
+        _showErrorDialog('Failed to load recommendations: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Caught error: $e'); // Debug log
+      _showErrorDialog('Error: $e');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Recommend Songs')),
-      body: Padding(
+      body: Container(
+        color: Color(0xFF232323), // Same background color as HomeScreen
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Mood Selection
-            Text('Select Mood:', style: TextStyle(fontSize: 18)),
-            // Add Mood Options (Radio buttons, etc.)
-
-            // Genre Selection
-            Text('Select Genres:', style: TextStyle(fontSize: 18)),
-            Wrap(
-              children: genres.map((genre) {
-                return ChoiceChip(
-                  label: Text(genre),
-                  selected: selectedGenres.contains(genre),
-                  onSelected: (selected) {
-                    setState(() {
-                      selected ? selectedGenres.add(genre) : selectedGenres.remove(genre);
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-
-            // Artist Selection
-            Text('Select Artists:', style: TextStyle(fontSize: 18)),
-            Wrap(
-              children: artists.map((artist) {
-                return ChoiceChip(
-                  label: Text(artist),
-                  selected: selectedArtists.contains(artist),
-                  onSelected: (selected) {
-                    setState(() {
-                      selected ? selectedArtists.add(artist) : selectedArtists.remove(artist);
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-
-            // Sliders for Danceability, Energy, Valence
-            Text('Danceability: ${danceability.toStringAsFixed(2)}'),
-            Slider(
-              value: danceability,
-              min: 0,
-              max: 1,
-              onChanged: (value) {
-                setState(() {
-                  danceability = value;
-                });
-              },
-            ),
-            Text('Energy: ${energy.toStringAsFixed(2)}'),
-            Slider(
-              value: energy,
-              min: 0,
-              max: 1,
-              onChanged: (value) {
-                setState(() {
-                  energy = value;
-                });
-              },
-            ),
-            Text('Valence: ${valence.toStringAsFixed(2)}'),
-            Slider(
-              value: valence,
-              min: 0,
-              max: 1,
-              onChanged: (value) {
-                setState(() {
-                  valence = value;
-                });
-              },
-            ),
-
-            // Submit Button
-            ElevatedButton(
-              onPressed: () {
-                // Call the function to recommend songs based on selected criteria
-                recommendSongs();
-              },
-              child: Text('Get Recommendations'),
+            SizedBox(height: 40), // Spacing from the top, can adjust based on design
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF3F3F3F),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.grey),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                            decoration: InputDecoration(
+                              hintText: 'Search songs, albums and artists',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10), // Center the text vertically
+                            ),
+                            onSubmitted: (query) {
+                              print('Query submitted: $query'); // Log the submitted query
+                              FocusScope.of(context).unfocus(); // Dismiss the keyboard
+                              if (query.isNotEmpty) {
+                                _fetchRecommendations(query);
+                              } else {
+                                _showErrorDialog('Please enter a search term.');
+                              }
+                            },
+                          ),
+                        ),
+                        Icon(Icons.tune, color: Colors.grey),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -110,24 +123,26 @@ class _RecommendScreenState extends State<RecommendScreen> {
         backgroundColor: Color(0xFF171717),
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white),
+            icon: Icon(Icons.home, color: _selectedIndex == 0 ? Colors.purple : Colors.white),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.recommend, color: Colors.purple),
+            icon: Icon(Icons.recommend, color: _selectedIndex == 1 ? Colors.purple : Colors.white),
             label: 'Recommend',
           ),
         ],
-        currentIndex: 1,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.purple,
+        unselectedItemColor: Colors.white,
         onTap: (index) {
-          // Handle bottom navigation tap
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()), // Redirect to HomeScreen
+            );
+          }
         },
       ),
     );
-  }
-
-  void recommendSongs() {
-    // Implement your recommendation logic here using the selected attributes
-    // Filter your dataset based on the selected genres, artists, and slider values
   }
 }

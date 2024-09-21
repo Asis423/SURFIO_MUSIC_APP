@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GenreRecommendedSongsScreen extends StatelessWidget {
+class RecommendedSongsScreen extends StatelessWidget {
   final List<dynamic> recommendations;
-  final String selectedGenres;
+  final String typedText;
 
-  GenreRecommendedSongsScreen({required this.recommendations, required this.selectedGenres});
+  RecommendedSongsScreen({required this.recommendations, required this.typedText});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recommended Songs by Genre', style: TextStyle(color: Colors.white, fontSize: 20)),
+        title: Text('Recommended Songs', style: TextStyle(color: Colors.white, fontSize: 20)),
         backgroundColor: Color(0xFF171717),
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -20,7 +20,7 @@ class GenreRecommendedSongsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              "Results for genres: $selectedGenres",
+              "Results for '$typedText'",
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
