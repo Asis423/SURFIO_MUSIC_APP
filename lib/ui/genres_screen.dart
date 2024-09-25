@@ -10,17 +10,19 @@ class GenresScreen extends StatefulWidget {
 
 class _GenresScreenState extends State<GenresScreen> {
   final List<String> genres = [
-    'Rock', 'Pop', 'Hip-Hop', 'Jazz', 'Classical',
-    'Electronic', 'Reggae', 'Blues', 'Metal', 'Country',
+    'Rock', 'Pop', 'Hip-Hop', 'Jazz', 'Classical', 'Indie',
+    'Electronic', 'Blues', 'Metal', 'Country',
     'Acoustic', 'Folk', 'R&B', 'Soul', 'Punk',
-    'Indie', 'Gospel', 'Alternative', 'Latin', 'Soundtrack'
+    // Adding most used genres from your dataset
+    'Dance Pop', 'K-Pop', 'Glam Rock', 'Big Room',
+    'Afrobeats', 'Latin',
   ];
 
   final List<String> selectedGenres = [];
 
   Future<List<dynamic>> fetchRecommendations() async {
     // Build the URL with selected genres
-    String url = 'http://192.168.2.9:8000/music/genre?selected_genres=${selectedGenres.join(",")}';
+    String url = 'http://192.168.2.8:8000/music/genre?selected_genres=${selectedGenres.join(",")}';
 
     final response = await http.get(Uri.parse(url));
 

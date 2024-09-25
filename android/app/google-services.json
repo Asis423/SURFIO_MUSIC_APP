@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375615416833",
+    "project_id": "surfio-417b9",
+    "storage_bucket": "surfio-417b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375615416833:android:37fcfb619e0e3c7b952e00",
+        "android_client_info": {
+          "package_name": "com.surfio.surfio_music_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO2VHK3hflKHaDxbfQuXY3Xb9vm2v-Y3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
