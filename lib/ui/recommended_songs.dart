@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:surfio_music_app/ui/player/music_player.dart';
 
 class RecommendedSongsScreen extends StatelessWidget {
   final List<dynamic> recommendations;
@@ -47,7 +47,7 @@ class RecommendedSongsScreen extends StatelessWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                   trailing: Icon(Icons.play_arrow, color: Colors.purple),
-                  onTap: () => launchSpotifyUri(context, song['Track Web URL']),
+                  onTap: () => _navigateToMusicPlayer(context, song),
                 );
               },
             ),
@@ -58,32 +58,19 @@ class RecommendedSongsScreen extends StatelessWidget {
     );
   }
 
-  void launchSpotifyUri(BuildContext context, String url) async {
-    final Uri uri = Uri.parse(url); // Parse the URL
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri); // Use launchUrl for the new API
-    } else {
-      _showErrorDialog(context, 'Could not launch Spotify app or web.');
-    }
-  }
-
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  // Function to navigate to the custom music player
+  void _navigateToMusicPlayer(BuildContext context, dynamic song) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomMusicPlayer(
+          trackName: song['Track Name'],
+          artistName: song['Artist Name(s)'],
+          albumArtUrl: song['Album Image URL'],
+          trackUrl: song['Track URL'], // Pass the Track URL for playback
+          trackDuration: song['Track Duration (ms)'],
+        ),
+      ),
     );
   }
 }
