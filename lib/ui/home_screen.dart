@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'home/latest.dart';
 import 'home/popular.dart';
-import 'popular_screen.dart';
-import 'latest_screen.dart';
+import 'home/quick_picks.dart';
+import 'popular/popular_screen.dart';
+import 'latest/latest_screen.dart';
 import 'artists_screen.dart';
 import 'genres_screen.dart';
 import 'albums_screen.dart';
@@ -160,9 +161,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            QuickPicks(),
+
+            SizedBox(height: 25),
             PopularSection(onSeeAll: () {
               _tabController.animateTo(1); // Switch to the Popular tab
             }),
+
             SizedBox(height: 25),
             LatestSection(onSeeAll: () {
               _tabController.animateTo(2); // Switch to the Latest tab

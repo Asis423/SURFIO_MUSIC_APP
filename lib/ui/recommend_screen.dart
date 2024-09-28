@@ -119,29 +119,32 @@ class _RecommendScreenState extends State<RecommendScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFF171717),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: _selectedIndex == 0 ? Colors.purple : Colors.white),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.recommend, color: _selectedIndex == 1 ? Colors.purple : Colors.white),
-            label: 'Recommend',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.white,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()), // Redirect to HomeScreen
-            );
-          }
-        },
+      bottomNavigationBar: SizedBox(
+        height: 70, // Set the height here
+        child: BottomNavigationBar(
+          backgroundColor: Color(0xFF171717),
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home, color: _selectedIndex == 0 ? Colors.purple : Colors.white),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.recommend, color: _selectedIndex == 1 ? Colors.purple : Colors.white),
+              label: 'Recommend',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.purple,
+          unselectedItemColor: Colors.white,
+          onTap: (index) {
+            if (index == 0) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()), // Redirect to HomeScreen
+              );
+            }
+          },
+        ),
       ),
     );
   }

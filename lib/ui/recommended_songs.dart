@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:surfio_music_app/ui/player/music_player.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RecommendedSongsScreen extends StatelessWidget {
   final List<dynamic> recommendations;
@@ -58,8 +60,9 @@ class RecommendedSongsScreen extends StatelessWidget {
     );
   }
 
-  // Function to navigate to the custom music player
+  // Function to navigate to the custom music player and update song data
   void _navigateToMusicPlayer(BuildContext context, dynamic song) {
+    _updateSongData(song); // Update song data in the backend
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -72,5 +75,32 @@ class RecommendedSongsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Function to update song data in the backend
+  Future<void> _updateSongData(dynamic song) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://your-api-url.com/update_song'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'track_name': song['Track Name'],
+          'artist_name': song['Artist Name(s)'],
+          'album_name': song['Album Name'],
+          'danceability': song['Danceability'],
+          'energy': song['Energy'],
+          'valence': song['Valence'],
+          'tempo': song['Tempo'],
+          'acousticness': song['Acousticness'],
+          'loudness': song['Loudness'],
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        print('Failed to update song data: ${response.body}');
+      }
+    } catch (error) {
+      print('Error updating song data: $error');
+    }
   }
 }
