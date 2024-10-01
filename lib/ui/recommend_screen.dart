@@ -14,7 +14,11 @@ class _RecommendScreenState extends State<RecommendScreen> {
   TextEditingController _searchController = TextEditingController();
 
   Future<void> _fetchRecommendations(String query) async {
+<<<<<<< HEAD
     final url = 'http://192.168.2.8:8000/music/recommend?query=$query'; // Update with your backend URL
+=======
+    final url = 'http://192.168.2.7:8000/music/recommend?query=$query'; // Update with your backend URL
+>>>>>>> a3741b2fa2019b9d61d6c85042ebf3b16d811730
     try {
       print('Fetching recommendations for query: $query'); // Debug log
       final response = await http.get(Uri.parse(url));

@@ -20,7 +20,11 @@ class _PopularScreenState extends State<PopularScreen> {
 
   // Function to fetch popular songs from the backend
   Future<void> _fetchPopularSongs() async {
+<<<<<<< HEAD
     final url = 'http://192.168.2.8:8000/music/popular'; // Replace with your backend URL
+=======
+    final url = 'http://192.168.2.7:8000/music/popular'; // Replace with your backend URL
+>>>>>>> a3741b2fa2019b9d61d6c85042ebf3b16d811730
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
