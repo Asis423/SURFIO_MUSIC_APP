@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; // Import the home_screen.dart file
+import 'login/login_interface.dart'; // Import the home_screen.dart file
 
 class LandingPage extends StatelessWidget {
   @override
@@ -72,7 +72,7 @@ class LandingPage extends StatelessWidget {
                     // Navigate to home_screen.dart when button is clicked
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()), // Ensure HomeScreen is implemented
+                      MaterialPageRoute(builder: (context) => LoginInterface()), // Ensure HomeScreen is implemented
                     );
                   },
                   child: Image.asset(

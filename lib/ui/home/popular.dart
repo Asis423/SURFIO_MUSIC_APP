@@ -23,7 +23,7 @@ class _PopularSectionState extends State<PopularSection> {
   }
 
   Future<void> _fetchPopularSongs() async {
-    final url = 'http://172.16.2.100:8000/music/popular'; // Replace with your backend URL
+    final url = 'http://192.168.2.7:8000/music/popular'; // Replace with your backend URL
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
