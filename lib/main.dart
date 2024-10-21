@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'ui/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-// import 'ui/player_trash.dart';
+import 'config.dart'; // Import the config file
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Here, you can initialize any necessary configurations
   runApp(MyApp());
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For JSON decoding
+import '../../config.dart';
 import '../player/music_player.dart'; // Import your music player
 
 class QuickPicks extends StatefulWidget {
@@ -22,7 +23,7 @@ class _QuickPicksState extends State<QuickPicks> {
   }
 
   Future<void> _fetchQuickPicks() async {
-    final url = 'http://192.168.2.7:8000/music/quick_picks'; // Replace with your backend URL
+    final url = '${Config.baseUrl}/music/quick_picks'; // Replace with your backend URL
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

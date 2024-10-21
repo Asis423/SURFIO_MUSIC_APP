@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:surfio_music_app/ui/login/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupPage extends StatefulWidget {
   @override
   _SignupPageState createState() => _SignupPageState();
 }
-
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   String _username = '';
@@ -13,6 +14,64 @@ class _SignupPageState extends State<SignupPage> {
   String _gender = 'Male'; // Default gender selection
   String _password = '';
   String _confirmPassword = '';
+  bool _isLoading = false; // For showing a loading indicator
+
+  // Sign up method to register user
+  Future<void> _signUp(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        // Firebase Authentication
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+          email: _email,
+          password: _password,
+        );
+
+        // Saving additional user information to Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'username': _username,
+          'email': _email,
+          'gender': _gender,
+          'password': _password,
+        });
+
+        // Navigate to login page on successful signup
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } on FirebaseAuthException catch (e) {
+        String errorMessage = 'An error occurred, please try again.';
+        if (e.code == 'email-already-in-use') {
+          errorMessage = 'The email is already registered.';
+        } else if (e.code == 'weak-password') {
+          errorMessage = 'The password is too weak.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'The email address is not valid.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      } catch (e) {
+        // This will catch any other errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unexpected error: $e')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,10 +282,10 @@ class _SignupPageState extends State<SignupPage> {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                               child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    // Handle signup action
-                                  }
+                                  onPressed: _isLoading
+                                      ? null
+                                      : () {
+                                    _signUp(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.symmetric(
@@ -234,7 +293,11 @@ class _SignupPageState extends State<SignupPage> {
                                   backgroundColor: Colors.transparent, // No solid color, use gradient
                                   shadowColor: Colors.transparent, // Remove shadow
                                 ),
-                                child: Text(
+                                child: _isLoading
+                                    ? CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                                    : Text(
                                   'SIGN UP',
                                   style: TextStyle(
                                     fontSize: 20,

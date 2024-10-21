@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For parsing JSON responses
+import '../config.dart';
 import 'home_screen.dart';
 import 'recommended_songs.dart'; // Import the screen for recommended songs
 
@@ -14,7 +15,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
   TextEditingController _searchController = TextEditingController();
 
   Future<void> _fetchRecommendations(String query) async {
-    final url = 'http://192.168.2.7:8000/music/recommend?query=$query'; // Update with your backend URL
+    final url = '${Config.baseUrl}/music/recommend?query=$query'; // Update with your backend URL
     try {
       print('Fetching recommendations for query: $query'); // Debug log
       final response = await http.get(Uri.parse(url));

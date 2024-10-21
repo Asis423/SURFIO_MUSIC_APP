@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // For HTTP requests
 import 'dart:convert'; // For JSON encoding/decoding
+import '../config.dart';
 import 'genre_recommend.dart'; // Import the screen for genre recommendations
 
 class GenresScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _GenresScreenState extends State<GenresScreen> {
 
   Future<List<dynamic>> fetchRecommendations() async {
     // Build the URL with selected genres
-    String url = 'http://192.168.2.7:8000/music/genre?selected_genres=${selectedGenres.join(",")}';
+    String url = '${Config.baseUrl}/music/genre?selected_genres=${selectedGenres.join(",")}';
 
     final response = await http.get(Uri.parse(url));
 

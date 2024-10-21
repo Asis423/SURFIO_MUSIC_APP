@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // For making HTTP requests
 import 'dart:convert'; // For JSON decoding
+import '../../config.dart';
 import '../player/music_player.dart'; // Import your music player
 
 class PopularSection extends StatefulWidget {
@@ -23,7 +24,7 @@ class _PopularSectionState extends State<PopularSection> {
   }
 
   Future<void> _fetchPopularSongs() async {
-    final url = 'http://192.168.2.7:8000/music/popular'; // Replace with your backend URL
+    final url = '${Config.baseUrl}/music/popular'; // Replace with your backend URL
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

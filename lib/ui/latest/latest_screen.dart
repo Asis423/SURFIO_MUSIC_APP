@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // To parse JSON data
-import 'package:surfio_music_app/ui/player/music_player.dart'; // Import your custom music player
+import 'package:surfio_music_app/ui/player/music_player.dart';
+import '../../config.dart';
 
 class LatestScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _LatestScreenState extends State<LatestScreen> {
 
   // Function to fetch popular songs from the backend
   Future<void> _fetchLatestSongs() async {
-    final url = 'http://192.168.2.7:8000/music/latest'; // Replace with your backend URL
+    final url = '${Config.baseUrl}/music/latest'; // Replace with your backend URL
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
