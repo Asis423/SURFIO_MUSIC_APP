@@ -169,4 +169,5 @@ class _GenresScreenState extends State<GenresScreen> {
       },
     );
   }
+
 }

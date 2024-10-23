@@ -7,11 +7,13 @@ class SignupPage extends StatefulWidget {
   @override
   _SignupPageState createState() => _SignupPageState();
 }
+
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   String _username = '';
   String _email = '';
   String _gender = 'Male'; // Default gender selection
+  String _role = 'User'; // Default role selection
   String _password = '';
   String _confirmPassword = '';
   bool _isLoading = false; // For showing a loading indicator
@@ -39,6 +41,7 @@ class _SignupPageState extends State<SignupPage> {
           'username': _username,
           'email': _email,
           'gender': _gender,
+          'role': _role, // Storing role in Firestore
           'password': _password,
         });
 
@@ -69,7 +72,6 @@ class _SignupPageState extends State<SignupPage> {
           _isLoading = false;
         });
       }
-
     }
   }
 
@@ -133,7 +135,7 @@ class _SignupPageState extends State<SignupPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Username, Email, Gender, Password, Confirm Password Fields
+                      // Username, Email, Gender, Role, Password, Confirm Password Fields
                       Form(
                         key: _formKey,
                         child: Column(
@@ -217,6 +219,33 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                             SizedBox(height: 15),
 
+                            // Role Field
+                            // DropdownButtonFormField<String>(
+                            //   value: _role,
+                            //   decoration: InputDecoration(
+                            //     labelText: 'Role',
+                            //     labelStyle: TextStyle(
+                            //         fontSize: 16,
+                            //         fontWeight: FontWeight.w600,
+                            //         color: Color(0xFFbe0000)),
+                            //     enabledBorder: UnderlineInputBorder(
+                            //       borderSide: BorderSide(color: Color(0xFF4d0e02)),
+                            //     ),
+                            //   ),
+                            //   items: ['User', 'Admin'].map((String role) {
+                            //     return DropdownMenuItem<String>(
+                            //       value: role,
+                            //       child: Text(role),
+                            //     );
+                            //   }).toList(),
+                            //   onChanged: (value) {
+                            //     setState(() {
+                            //       _role = value!;
+                            //     });
+                            //   },
+                            // ),
+                            // SizedBox(height: 15),
+
                             // Password Field
                             TextFormField(
                               obscureText: true,
@@ -263,84 +292,58 @@ class _SignupPageState extends State<SignupPage> {
                                 });
                               },
                               validator: (value) {
-                                if (value == null || value != _password) {
+                                if (value != _password) {
                                   return 'Passwords do not match';
                                 }
                                 return null;
                               },
                             ),
-                            SizedBox(height: 40),
-
-                            // Sign Up Button with gradient and custom text
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Color(0xff7d0000), Color(0xff28004b)],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ),
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: ElevatedButton(
-                                  onPressed: _isLoading
-                                      ? null
-                                      : () {
-                                    _signUp(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 80, vertical: 12),
-                                  backgroundColor: Colors.transparent, // No solid color, use gradient
-                                  shadowColor: Colors.transparent, // Remove shadow
-                                ),
-                                child: _isLoading
-                                    ? CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                                    : Text(
-                                  'SIGN UP',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white, // White signup text
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 25),
-
-                            // Already have an Account? Login Text
-                            GestureDetector(
-                              onTap: () {
-                                // Handle navigate to login
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => LoginPage()),
-                                );
-                              },
-                              child: RichText(
-                                text: TextSpan(
-                                  text: 'Already have an account? ',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xFF1b002e),
-                                  ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: 'Login',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFFbe0000), // "Login" in red color
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
                           ],
                         ),
+                      ),
+                      SizedBox(height: 40),
+
+                      // Signup Button with CircularProgressIndicator for loading
+                      _isLoading
+                          ? CircularProgressIndicator()
+                          : Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xff7d0000), Color(0xff28004b)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () => _signUp(context),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 90, vertical: 12),
+                            backgroundColor: Colors.transparent, // No solid color, use gradient
+                            shadowColor: Colors.transparent, // Remove shadow
+                          ),
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white, // White text
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 15),
+
+                      // Login Redirection
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
+                          );
+                        },
+                        child: Text('Already have an account? Log in.'),
                       ),
                     ],
                   ),

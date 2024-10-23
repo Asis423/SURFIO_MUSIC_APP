@@ -4,6 +4,7 @@ import 'dart:convert'; // For parsing JSON responses
 import '../config.dart';
 import 'home_screen.dart';
 import 'recommended_songs.dart'; // Import the screen for recommended songs
+import 'home/quick_picks.dart'; // Import the QuickPicks widget
 
 class RecommendScreen extends StatefulWidget {
   @override
@@ -94,7 +95,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
                             controller: _searchController,
                             style: TextStyle(color: Colors.grey, fontSize: 14),
                             decoration: InputDecoration(
-                              hintText: 'Search songs, albums and artists',
+                              hintText: 'Search songs, albums, and artists',
                               hintStyle: TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(vertical: 10), // Center the text vertically
@@ -117,6 +118,17 @@ class _RecommendScreenState extends State<RecommendScreen> {
                 ),
               ],
             ),
+            SizedBox(height: 25), // Spacing between search bar and quick picks
+            Text(
+              'Discover Your Music', // Text to be displayed
+              style: TextStyle(
+                color: Colors.white, // Set text color
+                fontSize: 20, // Set font size
+                fontWeight: FontWeight.bold, // Set font weight
+              ),
+            ),
+            SizedBox(height: 20), // Spacing between the text and QuickPicks
+            QuickPicks(), // Add the QuickPicks widget here
           ],
         ),
       ),

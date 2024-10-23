@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'player/music_player.dart'; // Import the CustomMusicPlayer
 
 class GenreRecommendedSongsScreen extends StatelessWidget {
   final List<dynamic> recommendations;
@@ -15,7 +16,18 @@ class GenreRecommendedSongsScreen extends StatelessWidget {
         backgroundColor: Color(0xFF171717),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Column(
+      body: recommendations.isEmpty
+          ? Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "No songs found for the selected genre(s). Please try another genre.",
+            style: TextStyle(color: Colors.white, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      )
+          : Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -47,7 +59,21 @@ class GenreRecommendedSongsScreen extends StatelessWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                   trailing: Icon(Icons.play_arrow, color: Colors.purple),
-                  onTap: () => launchSpotifyUri(context, song['Track Web URL']),
+                  onTap: () {
+                    // Navigate to CustomMusicPlayer
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CustomMusicPlayer(
+                          trackName: song['Track Name'],
+                          artistName: song['Artist Name(s)'],
+                          albumArtUrl: song['Album Image URL'] ?? '', // Handle null
+                          trackUrl: song['Track URL'],
+                          trackDuration: 0, // Update with actual duration if available
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -55,35 +81,6 @@ class GenreRecommendedSongsScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Color(0xFF232323),
-    );
-  }
-
-  void launchSpotifyUri(BuildContext context, String url) async {
-    final Uri uri = Uri.parse(url); // Parse the URL
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri); // Use launchUrl for the new API
-    } else {
-      _showErrorDialog(context, 'Could not launch Spotify app or web.');
-    }
-  }
-
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

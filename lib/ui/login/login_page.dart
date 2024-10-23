@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:surfio_music_app/ui/login/signup_page.dart';
-import 'package:surfio_music_app/ui/home_screen.dart'; // Import your home screen
+import 'package:surfio_music_app/ui/login/signup_page.dart'; // Import Admin Dashboard
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth package
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../admin_dashboard.dart';
+import '../home_screen.dart'; // Import Firestore package
 
 class LoginPage extends StatefulWidget {
   @override
@@ -103,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             ),
                             SizedBox(height: 20),
-                
+
                             // Password Field
                             TextFormField(
                               obscureText: true,
@@ -130,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             ),
                             SizedBox(height: 50),
-                
+
                             // Login Button with gradient and custom text
                             Container(
                               decoration: BoxDecoration(
@@ -150,16 +153,53 @@ class _LoginPageState extends State<LoginPage> {
                                         email: _email,
                                         password: _password,
                                       );
-                
-                                      // If login is successful, navigate to HomeScreen
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                                      );
+
+                                      // After login, check user role
+                                      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(userCredential.user!.uid)
+                                          .get();
+
+                                      if (userDoc.exists) {
+                                        // Ensure the 'role' field exists and is not null
+                                        String? userRole = userDoc['role'];
+
+                                        if (userRole != null) {
+                                          // Debugging: Print the user's role
+                                          print('User role: $userRole');
+
+                                          // Navigate based on the user's role
+                                          if (userRole.toLowerCase() == 'admin') {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => AdminDashboard()),
+                                            );
+                                          } else {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => HomeScreen()),
+                                            );
+                                          }
+                                        } else {
+                                          // Handle the case where 'role' is null
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("User role is not defined.")),
+                                          );
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text("User not found in Firestore.")),
+                                        );
+                                      }
                                     } on FirebaseAuthException catch (e) {
                                       // Handle error (e.g., show a message)
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text(e.message ?? 'An error occurred')),
+                                      );
+                                    } catch (e) {
+                                      // Catch any other exceptions
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Unexpected error: $e')),
                                       );
                                     }
                                   }
@@ -181,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             SizedBox(height: 25),
-                
+
                             // Forgot Password Text
                             GestureDetector(
                               onTap: () {
@@ -196,7 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                
+
                             // Sign Up link with different colors for "Already have an account?" and "Sign Up"
                             SizedBox(height: 25),
                             GestureDetector(

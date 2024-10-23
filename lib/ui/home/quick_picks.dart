@@ -64,7 +64,7 @@ class _QuickPicksState extends State<QuickPicks> {
             child: isLoading
                 ? Center(child: CircularProgressIndicator()) // Show loading spinner while fetching
                 : isError
-                ? Center(child: Text('Failed to load songs', style: TextStyle(color: Colors.white)))
+                ? Center(child: Text('No songs available right now.', style: TextStyle(color: Colors.white)))
                 : quickPicks.isEmpty
                 ? Center(child: Text('No songs available', style: TextStyle(color: Colors.white)))
                 : SingleChildScrollView(
